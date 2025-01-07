@@ -1,0 +1,52 @@
+# Node modules
+node_modules/
+package-lock.json
+
+# Build output
+dist/
+
+# Vite cache
+node_modules/.vite
+
+# Test coverage
+coverage/
+
+# Jest cache
+.jest-cache/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# IDE config
+.idea/
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Common exclusions
+*.class
+*.py[cod]
+*.jar
+target/
+TEST*.xml
+*.app
+*.exe
+*.war
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+
+# Environment
+*.env
+!*.example.env
+
+# Configuration/cache
+.eslintcache
+.prettierrc

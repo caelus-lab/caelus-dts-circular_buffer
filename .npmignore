@@ -1,0 +1,49 @@
+# Node modules
+node_modules/
+# Development dependencies
+devDependencies/
+# Testing tools
+__tests__/
+*.spec.ts
+# Local configuration
+vite.config.ts
+jest.config.ts
+jest.config.js
+.eslintrc
+.prettierrc
+coverage/
+*.env
+# Documentation/examples
+docs/
+examples/
+# IDE/editor
+.idea/
+.vscode/
+# Git-related files
+.git/
+.gitignore
+# Common exclusions
+*.log
+*.class
+*.py[cod]
+*.jar
+target/
+TEST*.xml
+*.app
+*.exe
+*.war
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+Thumbs.db
+.DS_Store
+# Dev
+index.ts
+src/
+source/
+main/
+#Json
+tsconfig.json

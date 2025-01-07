@@ -1,0 +1,51 @@
+{
+  "name": "@caelus-dts/circular-buffer",
+  "version": "0.1.0",
+  "description": "A TypeScript implementation of a circular buffer data structure.",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "vite build",
+    "test": "jest --detectOpenHandles"
+  },
+  "keywords": [
+    "heap",
+    "data structure",
+    "tree-based",
+    "circular buffer",
+    "ring buffer",
+    "data structure"
+  ],
+  "author": "Caelus",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/es/index.js",
+      "default": "./dist/es/index.js"
+    }
+  },
+  "dependencies": {
+    "@caelus-dts/iterable": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "node-notifier": "^10.0.1",
+    "ts-jest": "^29.2.5",
+    "vite": "^6.0.5",
+    "vite-plugin-dts": "^4.4.0"
+  },
+  "repository": {
+    "url": "https://github.com/caelus-lab/caelus-dts-circular_buffer"
+  },
+  "bugs": {
+    "url": "https://github.com/caelus-lab/caelus-dts-circular_buffer/issues"
+  },
+  "homepage": "https://github.com/caelus-lab/caelus-dts-circular_buffer#readme"
+}
