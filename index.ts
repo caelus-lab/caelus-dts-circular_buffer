@@ -125,7 +125,7 @@ export default class CircularBuffer<T> extends IterableElement<T> {
         config: CBConfig = {},
     ) {
         const buffer = new CircularBuffer<O>(capacity, config);
-        buffer.write(values);
+        buffer.writeAll(values);
         return buffer;
     }
 
@@ -163,20 +163,29 @@ export default class CircularBuffer<T> extends IterableElement<T> {
     }
 
     /**
-     * Writes one or more values into the buffer. If the buffer is full, behavior depends on the `overwrite` and `warnOnFull` properties.
+     * Writes a value to the buffer.
      *
-     * @param values - An array of values to be written into the buffer.
+     * @param value - The value to be written to the buffer
      */
-    public write(values: Iterable<T>) {
+    public write(value: T) {
+        if (!this.config.overwrite && this.isFull && this.config.warnOnFull) {
+            console.warn("Buffer is full. Data is being ignored. Consider increasing buffer size or enabling overwrite.");
+            return;
+        }
+        if (this.config.overwrite || this.bufferState.writeIndex < this.capacity) {
+            this.bufferState.write(value);
+            if (this.config.notifyOnOverwrite && this.bufferState.writeIndex === 0) console.warn("Buffer is full. Oldest data is being overwritten.");
+        }
+    }
+
+    /**
+     * Writes all values from the provided iterable to the intended destination.
+     *
+     * @param values - An iterable containing the values to be written.
+     */
+    public writeAll(values: Iterable<T>) {
         for (const value of values) {
-            if (!this.config.overwrite && this.isFull && this.config.warnOnFull) {
-                console.warn("Buffer is full. Data is being ignored. Consider increasing buffer size or enabling overwrite.");
-                return;
-            }
-            if (this.config.overwrite || this.bufferState.writeIndex < this.capacity) {
-                this.bufferState.write(value);
-                if (this.config.notifyOnOverwrite && this.bufferState.writeIndex === 0) console.warn("Buffer is full. Oldest data is being overwritten.");
-            }
+            this.write(value)
         }
     }
 

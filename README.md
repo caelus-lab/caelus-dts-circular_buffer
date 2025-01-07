@@ -26,85 +26,107 @@ yarn add @caelus-dts/circular-buffer
 pnpm add @caelus-dts/circular-buffer
 ```
 
-## Usage Examples
-
+## Usage
 ```ts
 import CircularBuffer from '@caelus-dts/circular-buffer';
 
-// Create a buffer with capacity 3
-const buffer = new CircularBuffer<number>(3);
+// Create a new CircularBuffer with a capacity of 5
+const buffer = new CircularBuffer<number>(5);
 
-// Write data to the buffer
+// Write values to the buffer
 buffer.write(1);
 buffer.write(2);
-buffer.write(3);
+buffer.writeAll([3, 4, 5]);
 
-// Attempting to write more data overwrites old data
-buffer.write(4); // This will log a warning for trying to overwrite existing data
-console.log(buffer.toArray()); // Output: [1, 2, 3]
-
-// Read data from the buffer
+// Read values from the buffer
 console.log(buffer.read()); // Output: 1
 console.log(buffer.read()); // Output: 2
 
-// Check if the buffer is empty or full
-console.log(buffer.isEmpty()); // Output: false
-console.log(buffer.isFull()); // Output: false
+// Check buffer status
+console.log(buffer.isEmpty);   // Output: false
+console.log(buffer.isFull);    // Output: true
+console.log(buffer.capacity);  // Output: 5
+console.log(buffer.size);     // Output: 5
 
-// Clear the buffer
+// Convert buffer to array
+const array = buffer.toArray(); // array = [1, 2, 3, 4, 5]. buffer is not modified
+const array2 = buffer.toArray(true); // array2 = [1, 2, 3, 4, 5], buffer is cleared
+console.log(buffer.isEmpty); // Output: true
+
+// Or Clear the buffer using .clear()
 buffer.clear();
-console.log(buffer.isEmpty()); // Output: true
+console.log(buffer.isEmpty); // Output: true
 
-// Create a buffer with capacity 3 and allowed to overwrite old data
-const buffer2 = new CircularBuffer<number>(3, {overwrite: true});
 
-// Write data to the buffer
-buffer2.write(1);
-buffer2.write(2);
-buffer2.write(3);
 
-// Attempting to write more data overwrites old data
-buffer2.write(4);
-console.log(buffer2.toArray()); // Output: [4, 2, 3]
+// Create a CircularBuffer from an iterable
+const bufferFromArray = CircularBuffer.from([6, 7, 8, 9, 10], 3, { overwrite: true });
+console.log(bufferFromArray.toArray()) // Output: [8, 9, 10]
 
-// Read data from the buffer
-console.log(buffer2.read()); // Output: 4
-console.log(buffer2.read()); // Output: 2
+
+// Dumping elements from the buffer
+const dumped = bufferFromArray.dump();
+console.log(dumped); // 8
+console.log(bufferFromArray.toArray()) // Output: [9, 10, undefined]
+
+// Resizing the buffer
+bufferFromArray.resize(8);
+console.log(bufferFromArray.capacity); // 8
+
+
 ```
+
+## Configuration
+
+The `CircularBuffer` constructor accepts an optional configuration object (`CBConfig`) with the following properties:
+
+* `overwrite` (default: `false`): If `true`, when the buffer is full, writing new values will overwrite the oldest values. If `false`, writing new values when the buffer is full has no effect, and a warning is printed to the console if `warnOnFull` is `true`.
+
+* `warnOnFull` (default: `true`): If `true`, a warning message will be printed to the console when attempting to write to a full buffer when the overwrite option is set to false.  This has no effect if `overwrite` is `true`.
+
+* `notifyOnOverwrite` (default: `false`): If `true`, and if the `overwrite` option is also `false `, a warning will be logged to the console whenever a value is overwritten.
+
+
+## Error Handling
+
+If you attempt to resize the buffer to a smaller capacity without setting the `force` parameter to `true` in the `resize` method, a `BufferNewCapacityIsSmallerError` (BNCIS) will be thrown.
+
 
 ## API Reference
 
 ### Constructor
 
-`new CircularBuffer<T>(capacity: number, config?: CircularBufferConfig)`
-Creates a new CircularBuffer instance.
+```ts
+new CircularBuffer<T>(capacity: number, config?: CBConfig);
+```
 
-- **`capacity`**: (`number`) The maximum number of elements the buffer can hold.
-- **`config`**: (optional, `CircularBufferConfig`) Configuration for buffer behavior:
-    - **`overwrite`**: (`boolean`, default: `false`) Allow the buffer to overwrite older data when full.
-    - **`warnOnFull`**: (`boolean`, default: `true`) Print a warning if the buffer try to overwrite older data when
-      full, only if `overwrite` set `true`.
-    - **`notifyOnOverwrite`**: (`boolean`, default: `false`) Print a warning older data was overwritten.
 
-### Properties
-
-- **`capacity`**: Returns the current capacity of the buffer.
-- **`isEmpty`**: Returns `true` if the buffer is empty, `false` otherwise.
-- **`isFull`**: Returns `true` if the buffer is full, `false` otherwise.
-- **`size`**: Returns the current number of elements in the buffer.
+*   `capacity`: The maximum number of elements the buffer can hold.
+*   `config`:  Optional configuration object (see Configuration section above).
 
 ### Methods
+*   **`capacity`**: Returns the buffer's capacity.
+*   **`clear()`**: Clears the buffer.
+*   **`dump()`**: Removes and returns the next value from the buffer.
+*   **`from<O>(values: Iterable<O>, capacity: number, config?: CBConfig)`**: Static method creating a circular buffer from iterable values.
+*   **`isFull`**: Returns `true` if the buffer is full, `false` otherwise.
+*   **`isEmpty`**: Returns `true` if the buffer is empty, `false` otherwise.
+*   **`read()`**: Reads and returns the next value from the buffer. Returns `undefined` if the buffer is empty.
+*   **`resize(newCapacity: number, force?: boolean)`**: Resizes the buffer.
+*   **`size`**: Returns the current number of elements in the buffer.
+*   **`toArray(clear?: boolean)`**: Converts the buffer to an array.
+*   **`write(value: T)`**: Writes a value to the buffer.
+*   **`writeAll(values: Iterable<T>)`**: Writes multiple values to the buffer from an iterable.
 
-- **`write(value: Iterable<T>): void`**: Write new iterable value to the buffer. Overwrites the oldest entry if the buffer is full and
-  `overwrite` is set to `true`.
-- **`read(): T | undefined`**: Read without removing the next element from the buffer. Returns `undefined` if the buffer
-  is empty.
-- **`dump(): T | undefined`**: Removing and returns the next element from the buffer. Returns `undefined` if the buffer
-  is empty.
-- **`clear(): void`**: Clears all elements from the buffer, resetting it to an empty state and ready for reuse.
-- **`resize(newCapacity: number, force: boolean): void`**: Changes the buffer's capacity, retaining existing elements up to the new capacity limit and removing any excess elements.
-- **`toArray(): T[]`**: Returns a shallow copy of the buffer's elements as an array.
-- **`from<O>(values: Iterable<O>,capacity: number, config?: CBConfig): CircularBuffer<O>`**: Creates a new CircularBuffer instance based on a specified array of elements, with optional configuration parameters.
+## Iterating
+
+`CircularBuffer` extends `IterableElement`, making it iterable. You can use for...of loops to iterate over the elements:
+
+```typescript
+for (const value of buffer) {
+    console.log(value);
+}
+```
 
 ## Contributing Guidelines
 
